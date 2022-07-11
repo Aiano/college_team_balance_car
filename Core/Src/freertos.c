@@ -153,6 +153,7 @@ void StartDefaultTask(void const * argument)
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 extern char pause_state;
+extern char control_mode;
 
 void LedTask(void *pvParameters) {
     while (1) {
@@ -160,7 +161,11 @@ void LedTask(void *pvParameters) {
         if (pause_state==1){ // change frequency to indicate the pausing state
             vTaskDelay(pdMS_TO_TICKS(100));
         }else {
-            vTaskDelay(pdMS_TO_TICKS(500));
+            if(control_mode == 0){ // speed control
+                vTaskDelay(pdMS_TO_TICKS(500));
+            }else{ // position control
+                vTaskDelay(pdMS_TO_TICKS(1000));
+            }
         }
     }
 }
