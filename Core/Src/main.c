@@ -57,7 +57,7 @@ extern double target_speed;
 extern double target_position;
 extern double target_angular_speed;
 char pause_state = 0;
-char control_mode = 1; // 0 = speed control(default)    1 = position control
+char control_mode = 0; // 0 = speed control(default)    1 = position control
 extern int16_t now_position;
 /* USER CODE END PV */
 
@@ -88,6 +88,8 @@ void pause(char *cmd);
 void resume(char *cmd);
 
 void change_mode(char *cmd); // switch speed control and position control
+
+void move_cm(char *cmd); // move forward or backward in cm
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -150,6 +152,7 @@ int main(void) {
     uart_parser_add_command('B', resume, "resume");
     uart_parser_add_command('F', change_target_degree, "change target degree");
     uart_parser_add_command('G', change_mode, "change mode"); // switch speed mode and position mode
+    uart_parser_add_command('H', move_cm, "move cm"); // move forward or backward in cm
 
     /* USER CODE END 2 */
 
@@ -260,13 +263,19 @@ void change_mode(char *cmd) {
         target_speed = 0;
 
         printf("Mode: speed control\n");
-    } else if (control_mode == 0){
+    } else if (control_mode == 0) {
         control_mode = 1; // position control
         now_position = 0;
         target_speed = 0;
 
         printf("Mode: position control\n");
     }
+}
+
+void move_cm(char *cmd) {
+    /* Please wait until the action was finished. */
+    now_position = 0;
+    uart_parser_scalar(&target_position, cmd);
 }
 /* USER CODE END 4 */
 

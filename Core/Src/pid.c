@@ -16,6 +16,7 @@ double target_degree = -3.3; // 目标角度
 double target_speed = 0; // 目标速度
 double target_angular_speed = 0; // 目标角速度 CW 顺时针
 double target_position = 0; // 目标位置
+double target_position_factor = 70;
 
 // 各个环pid输出控制量
 double u1 = 0; // 直立环
@@ -109,14 +110,14 @@ void pid_init() {
     pid_spin.last_error = 0;
 
     // 位置环
-    pid_position.Kp = 0.01;
+    pid_position.Kp = 0.005;
     pid_position.Ki = 0;
     pid_position.Kd = 0;
 
     pid_position.max_integral = 500;
     pid_position.min_integral = -500;
-    pid_position.max_u = 5;
-    pid_position.min_u = -5;
+    pid_position.max_u = 6;
+    pid_position.min_u = -6;
 
     pid_position.integral = 0;
     pid_position.last_error = 0;
@@ -149,7 +150,8 @@ void pid_compute() {
     //if (u1 < 50 && u1 > -50) u1 = 0; // 死区, 增加稳定性
 
     if (control_mode == 1) { // position control
-        target_speed = pid_get_u(&pid_position, target_position, now_position); // 位置环
+        // 目标位置：单位cm
+        target_speed = pid_get_u(&pid_position, target_position * target_position_factor, now_position); // 位置环
     }
     u2 = pid_get_u(&pid_speed, target_speed, avg_speed); // 速度环
 
